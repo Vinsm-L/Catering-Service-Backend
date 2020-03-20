@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- maven远程仓库 -->
+<repository>
+    <id>opensesame</id>
+    <name>Alibaba OpenSource Repsoitory</name>
+    <url>http://code.alibabatech.com/mvn/releases/</url>
+    <snapshots>
+        <enabled>false</enabled>
+    </snapshots>
+</repository>

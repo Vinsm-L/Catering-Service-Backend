@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.IOrderDao">
+
+    <!-- order结果集映射 -->
+    <resultMap id="orderMap" type="order">
+        <!-- 订单信息 -->
+        <id column="id" property="id"/>
+        <result column="add_time" property="addDate"/>
+        <result column="price" property="price"/>
+        <result column="status" property="status"/>
+        <result column="tables_number" property="tablesNumber"/>
+
+        <!-- 商品id列表 -->
+        <collection property="goodsId" ofType="Integer">
+            <result column="goods_id"></result>
+        </collection>
+        <!-- 商品数量列表 -->
+        <collection property="goodsCount" column="id" ofType="Integer" select="getCounts">
+            <result column="count"/>
+        </collection>
+
+    </resultMap>
+
+    <select id="getCounts" resultType="Integer">
+        select count from order_goods where order_id = #{id};
+    </select>
+
+    <select id="getAllOrders" resultMap="orderMap">
+        select
+            `order`.*,
+            order_goods.*
+        from
+            `order`,
+            order_goods
+        where
+            `order`.id = order_goods.order_id;
+    </select>
+
+    <select id="getOrdersListByPeriod" resultMap="orderMap">
+        select
+            `order`.*,
+            order_goods.*
+        from
+            `order`, order_goods
+        where
+            `order`.add_time between #{arg0} and #{arg1}
+            and `order`.id = order_goods.order_id;
+    </select>
+
+    <select id="getOrdersListByStatus" resultMap="orderMap">
+        select
+            `order`.*,
+            order_goods.*
+        from
+            `order`, order_goods
+        where
+            `order`.status = #{status}
+            and `order`.id = order_goods.order_id;
+    </select>
+
+    <select id="getOrderById" resultMap="orderMap">
+        select
+            `order`.*,
+            order_goods.*
+        from
+            `order`, order_goods
+        where
+            `order`.id = #{id}
+            and order_goods.order_id = #{id};
+    </select>
+
+    <insert id="insertOrder" parameterType="order" keyProperty="id" useGeneratedKeys="true">
+        insert into
+            `order` (add_time, price, status, tables_number)
+        values
+            (#{addDate}, #{price}, #{status}, #{tablesNumber});
+    </insert>
+
+    <delete id="deleteOrderById" parameterType="int">
+        delete from
+            `order`
+        where
+            id = #{id};
+    </delete>
+
+    <update id="updateOrder" parameterType="order">
+        update
+            `order`
+        set
+            add_time = #{addDate},
+            price = #{price},
+            status = #{status},
+            tables_number = #{tablesNumber}
+        where
+            id = #{id};
+    </update>
+
+    <insert id="insertSpecificRelation">
+        insert into
+            order_goods (order_id, goods_id, count)
+        values
+            (#{arg0}, #{arg1}, #{arg2});
+    </insert>
+
+    <delete id="deleteSpecificRelation">
+        delete from
+            order_goods
+        where
+            order_id = #{arg0}
+            and goods_id = #{arg1};
+    </delete>
+
+    <update id="updateSpecificRelation">
+        update
+            order_goods
+        set
+            count = #{arg2}
+        where
+            order_id = #{arg0}
+            and goods_id = #{arg1};
+    </update>
+
+</mapper>

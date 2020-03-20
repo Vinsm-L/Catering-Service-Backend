@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.IShopDao">
+    <select id="getShopInfo" resultType="shopInfo">
+        select
+            `name`,
+            info,
+            icon_url as iconUrl,
+            backgrouund_url as backgroundUrl,
+            telephone,
+            address,
+            `status`
+        from shop_info;
+    </select>
+
+    <select id="getStatus" resultType="boolean">
+        select `status` from shop_info;
+    </select>
+
+    <update id="setStatus" parameterType="boolean">
+        update shop_info set `status` = #{status};
+    </update>
+
+    <update id="updateShopInfo" parameterType="shopInfo">
+        update shop_info
+        set
+            name = #{name},
+            info = #{info},
+            icon_url = #{iconUrl},
+            backgrouund_url = #{backgroundUrl},
+            telephone = #{telephone},
+            address = #{address},
+            status = #{status}
+    </update>
+
+    <insert id="insertShopInfo" parameterType="shopInfo">
+        insert into shop_info (name, info, icon_url, backgrouund_url, telephone, address, status)
+        values (#{name},#{info},#{iconUrl},#{backgroundUrl},#{telephone},#{address},#{status});
+    </insert>
+</mapper>

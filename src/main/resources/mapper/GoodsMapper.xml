@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.IGoodsDao">
+
+    <!-- Goods结果集映射 -->
+    <resultMap id="goodsMap" type="goods">
+        <!-- 商品信息 -->
+        <id property="id" column="id"/>
+        <result property="imgSrc" column="image_src"/>
+        <result property="name" column="name"/>
+        <result property="desc" column="desc"/>
+        <result property="price" column="price"/>
+        <result property="volume" column="volume"/>
+        <!-- 商品类别信息 -->
+        <collection property="cate" ofType="category" columnPrefix="c_">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAllGoods" resultMap="goodsMap">
+        select
+            goods.*,
+            goods_category.category_id,
+            category.id as c_id,
+            category.name as c_name
+        from
+            goods,
+            goods_category,
+
+            category
+        where
+            goods.id = goods_category.goods_id
+                and goods.active = 1
+            and goods_category.category_id = category.id;
+    </select>
+
+    <select id="getGoodsById" resultMap="goodsMap">
+        select
+            goods.*,
+            goods_category.category_id,
+            category.id as c_id,
+            category.name as c_name
+        from
+            goods,
+            goods_category,
+            category
+        where
+            goods.id = #{id}
+            and goods.active = 1
+            and goods.id = goods_category.goods_id
+            and goods_category.category_id = category.id;
+    </select>
+
+    <select id="getGoodsNotInCate" resultMap="goodsMap">
+        select
+            goods.*
+        from
+            goods
+        where
+            goods.id not in (select goods_id from goods_category)
+            and goods.active = 1
+    </select>
+
+
+
+    <select id="getGoodsNotInCateByID" resultMap="goodsMap">
+        select
+            goods.*
+        from
+            goods
+        where
+            goods.id = #{id} and
+            goods.id not in (select goods_id from goods_category)
+            and goods.active = 1
+    </select>
+
+    <select id="getAllGoodsByID" resultMap="goodsMap">
+        select
+            goods.*
+        from
+            goods
+        where
+            goods.id = #{id};
+    </select>
+
+    <select id="getGoodsListByCategory" resultMap="goodsMap">
+        select
+            goods.*,
+            goods_category.category_id,
+            category.id as c_id,
+            category.name as c_name
+        from
+            goods,
+            goods_category,
+            category
+        where
+            goods_category.category_id = #{id}
+            and goods.active = 1
+            and goods.id = goods_category.goods_id
+            and category.id = #{id};
+    </select>
+
+    <select id="getGoodsListByName" resultMap = "goodsMap">
+        select
+            goods.*,
+            goods_category.category_id,
+            category.id as c_id,
+            category.name as c_name
+        from
+            goods,
+            goods_category,
+            category
+        where
+            goods.name = #{name}
+            and goods.active = 1
+            and goods.id = goods_category.goods_id
+            and goods_category.category_id = category.id;
+    </select>
+
+    <select id="getAll">
+        select goods.* from goods;
+    </select>
+
+    <insert id="insertGoods" parameterType="goods" useGeneratedKeys="true" keyProperty="id">
+        insert into goods (name, `desc`, price, image_src, volume)
+        values (#{name}, #{desc}, #{price}, #{imgSrc}, #{volume});
+    </insert>
+
+    <delete id="deleteGoodsById" parameterType="int">
+        update goods set active = 0
+        where id = #{id};
+    </delete>
+
+    <update id="updateGoods" parameterType="goods">
+        update goods set name = #{name}, `desc` = #{desc}, price = #{price}, image_src = #{imgSrc}, volume = #{volume}
+          where id = #{id};
+    </update>
+
+    <delete id="deleteSpecficRelation" >
+        delete from mydb.goods_category
+        where mydb.goods_category.goods_id = #{arg0}
+              and mydb.goods_category.category_id = #{arg1};
+    </delete>
+
+    <insert id="insertSpecificRelation">
+        insert into goods_category(goods_id,category_id)
+        values (#{arg0}, #{arg1});
+    </insert>
+</mapper>

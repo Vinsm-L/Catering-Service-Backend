@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.ITablesDao">
+    <select id="getAllTables" resultType="tables">
+        select number, capacity, status, order_id as orderId from tables;
+    </select>
+
+    <select id="getTablesListByStatus" parameterType="int" resultType="tables">
+        select number, capacity, status, order_id as orderId from tables where status = #{status};
+    </select>
+
+    <select id="getTablesByNumber" parameterType="int" resultType="tables">
+        select number, capacity, status, order_id as orderId  from tables where number = #{number};
+    </select>
+
+    <insert id="insertTables" parameterType="tables" useGeneratedKeys="false" keyProperty="number">
+        insert into tables(number, capacity, status, order_id)
+        values (#{number}, #{capacity}, #{status}, null);
+    </insert>
+
+    <delete id="deleteTablesByNumber" parameterType="int">
+        delete from tables where number = #{number};
+    </delete>
+
+    <update id="updateTables" parameterType="tables">
+        update tables set capacity = #{capacity}, status = #{status}, mydb.tables.order_id = #{orderId}
+        where number = #{number};
+    </update>
+</mapper>
